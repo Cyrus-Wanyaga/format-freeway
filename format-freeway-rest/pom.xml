@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <artifactId>format-freeway</artifactId>
@@ -47,7 +46,8 @@
     <dependency>
       <groupId>org.apache.cxf</groupId>
       <artifactId>cxf-rt-rs-extension-providers</artifactId>
-      <version>4.0.0</version>
+      <version>3.4.8</version>
+      <scope>provided</scope>
     </dependency>
     <!-- https://mvnrepository.com/artifact/org.json/json -->
     <dependency>
@@ -59,7 +59,15 @@
 
   <build>
     <finalName>format-freeway-rest</finalName>
-    <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to
+    <resources>
+      <resource>
+        <directory>files</directory>
+        <includes>
+          <include>**/*</include>
+        </includes>
+      </resource>
+    </resources>
+    <pluginManagement>      <!-- lock down plugins versions to avoid using Maven defaults (may be moved to
       parent pom) -->
       <plugins>
         <plugin>
@@ -71,6 +79,24 @@
         <plugin>
           <artifactId>maven-resources-plugin</artifactId>
           <version>3.0.2</version>
+          <executions>
+            <execution>
+                <id>copy-resources</id>
+                <phase>validate</phase>
+                <goals>
+                    <goal>copy-resources</goal>
+                </goals>
+                <configuration>
+                    <outputDirectory>${project.build.directory}/${project.build.finalName}/files</outputDirectory>
+                    <resources>
+                        <resource>
+                            <directory>files</directory>
+                            <filtering>true</filtering>
+                        </resource>
+                    </resources>
+                </configuration>
+            </execution>
+        </executions>
         </plugin>
         <plugin>
           <artifactId>maven-compiler-plugin</artifactId>
@@ -83,6 +109,14 @@
         <plugin>
           <artifactId>maven-war-plugin</artifactId>
           <version>3.2.2</version>
+          <configuration>
+            <webResources>
+              <resource>
+                <directory>files</directory>
+                <targetPath>WEB-INF/classes/files</targetPath>
+              </resource>
+            </webResources>
+          </configuration>
         </plugin>
         <plugin>
           <artifactId>maven-install-plugin</artifactId>

@@ -7,6 +7,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.ParseContext;
@@ -16,6 +18,7 @@ import org.apache.tika.sax.BodyContentHandler;
 public class Converter {
     private InputStream input;
     private String outputFileName;
+    private File outputFile;
 
     public Converter() {
     };
@@ -23,6 +26,12 @@ public class Converter {
     public Converter(InputStream input, String outputFileName) {
         this.input = input;
         this.outputFileName = outputFileName;
+    }
+
+    public Converter(InputStream input, String outputFileName, File outputFile) {
+        this.input = input;
+        this.outputFileName = outputFileName;
+        this.outputFile = outputFile;
     }
 
     public InputStream getInput() {
@@ -41,9 +50,25 @@ public class Converter {
         this.outputFileName = outputFileName;
     }
 
+    public File getOutputFile() {
+        return outputFile;
+    }
+
+    public void setOutputFile(File outputFile) {
+        this.outputFile = outputFile;
+    }
+
+    public boolean checkIfFileExists() {
+        return Files.exists(Paths.get(this.outputFileName));
+    }
+
+    public void createFile() {
+        this.setOutputFile(new File(outputFileName));
+    }
+
     public void convertPdfToText() {
         try {
-            OutputStream output = new FileOutputStream(new File(outputFileName));
+            OutputStream output = checkIfFileExists() ? new FileOutputStream(this.outputFile) : new FileOutputStream(new File(outputFileName));
             BodyContentHandler bodyContentHandler = new BodyContentHandler(output);
             Metadata metadata = new Metadata();
             ParseContext parseContext = new ParseContext();
